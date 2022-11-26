@@ -12,15 +12,29 @@ public class PrimeNumbers {
 	private BufferedWriter file;
 	private boolean finished;
 	private int maxNum;
+	private int n;
+	private int count;
 	private Queue <Integer> queue = new LinkedList<>();
 
 	
-	public PrimeNumbers(String outputFile, int  bufferSize) throws IOException {
+	public PrimeNumbers(String outputFile, int  bufferSize,int n) throws IOException {
 	       this.file = new BufferedWriter(new FileWriter(outputFile));
 			this.bufferSize = bufferSize;
 	       this.finished = false; 
+	       this.n = n;
+	       this.count = 0;
 	}
-	public void produce(int n) throws InterruptedException {
+	
+	
+	
+	private boolean tracker() { this.finished = true; return finished;}
+	public  int  maxNum() {return this.maxNum;}
+	private void setMaxNum(int num) { this.maxNum = num;}
+	public int getNumberOfPrimes() {return count;}
+	
+	
+	
+	public void produce() throws InterruptedException {
 	synchronized(this) {
 		for (int num = 2; num <= n; num++){	
            // System.out.println(queue.size());
@@ -57,10 +71,7 @@ public class PrimeNumbers {
   }
   
 	
-	private boolean tracker() { this.finished = true; return finished;}
-	public  int  maxNum() {return this.maxNum;}
-	private void setMaxNum(int num) { this.maxNum = num;}
-	
+
 	public synchronized void consume() throws InterruptedException, IOException{
 		while(true) {
 		if(queue.isEmpty()) 
@@ -69,6 +80,7 @@ public class PrimeNumbers {
 			
 	        try { 
 	        	file.write(Integer.toString(queue.peek()) + ", ");
+	        	count++;
 	        }
 	        catch(Exception e) {
 	        	  if(this.finished && queue.isEmpty()) {
